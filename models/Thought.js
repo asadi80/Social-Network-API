@@ -35,13 +35,8 @@ const ReactionsSchema = new Schema({
 
 //ThoughtSchema
 const ThoughtSchema = new Schema({
+  
   thoughtText: {
-    type: String,
-    required: true,
-      trim: true,
-
-  },
-  commentBody: {
     type: String,
     required: true,
       trim: true,
@@ -75,7 +70,7 @@ ThoughtSchema.virtual('reactionCount').get(function() {
   return this.reactions.length;
 });
 
-// create the Thoughts model using the Thoughts Schema
+// create the Thoughts model using the Thought Schema
 const Thoughts = model('Thought', ThoughtSchema);
 
 // Export Thoughts Module

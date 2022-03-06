@@ -1,77 +1,78 @@
-const { Comment, Pizza } = require('../models');
+const {User, Thought} = require('../models');
 
-const commentController = {
-    // add comment to pizza
-    addComment({ params, body }, res) {
-        console.log(body);
-        Comment.create(body)
-          .then(({ _id }) => {
-            return Pizza.findOneAndUpdate(
-              { _id: params.pizzaId },
-              { $push: { comments: _id } },
-              { new: true }
-            );
-          })
-          .then(dbPizzaData => {
-            if (!dbPizzaData) {
-              res.status(404).json({ message: 'No pizza found with this id!' });
-              return;
-            }
-            res.json(dbPizzaData);
-          })
-          .catch(err => res.json(err));
-      },
- //   ---------------------------------------------------------------------
+const thoughtsController = {
 
-      addReply({ params, body }, res) {
-        Comment.findOneAndUpdate(
-          { _id: params.commentId },
-          { $push: { replies: body } },
-          { new: true, runValidators: true }
-        )
-          .then(dbPizzaData => {
-            if (!dbPizzaData) {
-              res.status(404).json({ message: 'No pizza found with this id!' });
-              return;
-            }
-            res.json(dbPizzaData);
-          })
-          .catch(err => res.json(err));
-      },
-    //   ---------------------------------------------------------------------
-    // remove reply
-removeReply({ params }, res) {
-  Comment.findOneAndUpdate(
-    { _id: params.commentId },
-    { $pull: { replies: { replyId: params.replyId } } },
-    { new: true }
-  )
-    .then(dbPizzaData => res.json(dbPizzaData))
-    .catch(err => res.json(err));
-},
-    //   ---------------------------------------------------------------------
+    creatThought({params,body}, res){
+        Thought.create(body)
+            .then(({_id}) =>{
+                return User.findOneAndUpdate({_id: params.userId}, {$push: {thoughts: _id}}, {new: true})
+            })
+            .then(thoughtsData => {
+                if(!thoughtsData){res.status(500).json({message: 'no user with this id'}) ; return;}
+                res.json(thoughtsData)
+            })
+            .catch(err => res.json(err))
+    },
 
-      removeComment({ params }, res) {
-        Comment.findOneAndDelete({ _id: params.commentId })
-          .then(deletedComment => {
-            if (!deletedComment) {
-              return res.status(404).json({ message: 'No comment with this id!' });
-            }
-            return Pizza.findOneAndUpdate(
-              { _id: params.pizzaId },
-              { $pull: { comments: params.commentId } },
-              { new: true }
-            );
-          })
-          .then(dbPizzaData => {
-            if (!dbPizzaData) {
-              res.status(404).json({ message: 'No pizza found with this id!' });
-              return;
-            }
-            res.json(dbPizzaData);
-          })
-          .catch(err => res.json(err));
-      }
-  };
+    getAllThoughts(req, res){
+        Thought.find()
+        .populate({path: 'reactions', selecte: '-__v'})
+        .selecte('-__v')
+        .sort({_id: -1})
+        .then(thoughtsData => res.json(thoughtsData))
+        .catch(err => res.json(err))
+    },
 
-module.exports = commentController;
+    getThoughtById({params}, res){
+        Thought.findOne({_id: params.id})
+        .populate({path: 'reactions', selecte: '-__v'})
+        .selecte('-__v')
+        .then(thoughtsData => {
+            if(!thoughtsData){ res.status(404).json({message: 'no thoughts with this id'}); return;}
+            res.json(thoughtsData)
+        })
+        .catch(err => res.json(err))
+    },
+
+    updateThought({params, body}, res){
+        Thought.findOneAndUpdate({_id: params.id}, body, {new:true, runValidators: true})
+        .then(thoughtsData =>{
+            if(!thoughtsData){res.status(404).json({message: 'no thoughts under this id'}); return;}
+            res.json(thoughtsData)
+        } )
+        .catch(err => res.json(err))
+    },
+
+    deleteThought({params}, res){
+        Thought.findOneAndDelete({_id: params.id})
+        .then(thoughtsData => {
+            if(!thoughtsData){ res.status(404).json({message:'no thoughts under this id'}); return;}
+            res.json(thoughtsData)
+        })
+        .catch( err => res.json(err))
+
+    },
+    addReaction({params, body}, res){
+        Thought.findOneAndUpdate({_id: params.thoughtId},{$push: {reaction: body}}, {new: true, runValidators: true})
+        .populate({path: 'reaction', selecte:'-__v'})
+        .selecte('-__v')
+        .then( thoughtsData => {
+            if(!thoughtsData){ res.status(404).json({message: 'no thoughts under this id'}); return;}
+            res.json(thoughtsData)
+        })
+        .catch(err => res.json(err))
+
+    },
+    deleteReaction({params}, res){
+        Thought.findOneAndUpdate({_id: params.thoughtId},{$pull: {reaction: {reactionId: params}}}, {new: true})
+        .then(thoughtsData => {
+            if(!thoughtsData){ res.status(404).json({message:'no thoughts under this id'}); return;}
+            res.json(thoughtsData)
+        })
+        .catch( err => res.json(err))
+
+    }
+
+}
+
+module.exports = thoughtsController; 
