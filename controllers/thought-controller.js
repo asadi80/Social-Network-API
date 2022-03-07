@@ -64,7 +64,7 @@ const thoughtsController = {
 
     },
     deleteReaction({params}, res){
-        Thought.findOneAndUpdate({_id: params.id},{$pull: { reactions: { reactionId: params.reactionId } } }, {new: true})
+        Thought.findOneAndUpdate({_id: params.thoughtId}, {$pull: {reactions: {reactionId: params.reactionId}}}, {new : true})
         .then(thoughtsData => {
             if(!thoughtsData){ res.status(404).json({message:'no thoughts under this id'}); return;}
             res.json(thoughtsData)

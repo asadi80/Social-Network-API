@@ -20,11 +20,17 @@ WHEN I test API POST and DELETE routes in Insomnia
 THEN I am able to successfully create and delete reactions to thoughts and add and remove
 
 ## Demo
-create, get, delete, update user
+Create, Get, Delete, Update User
 https://drive.google.com/file/d/1lD5ymp_ML35u6mMjgRY926YZnPzRP46F/view
 
-add, delete firnd 
+Add, Delete Firnd 
 https://drive.google.com/file/d/1s8MpmtibLT1bxXsWxL7YaAtB21nT-Ouo/view
+
+Create, Get, Delete, Update Thougths
+https://drive.google.com/file/d/1NioJf-9AhvE_mZbnJpq57DnffauQjra6/view
+
+Add Delete Reactions
+https://drive.google.com/file/d/1wmJ6ZtxrjO6IkZZA5_Gc4H3edPLfBc4s/view
 
 
 
