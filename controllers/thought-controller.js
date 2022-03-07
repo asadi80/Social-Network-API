@@ -2,25 +2,25 @@ const {User, Thought} = require('../models');
 
 const thoughtsController = {
 
-    creatThought({params,body}, res){
+    createThought({params,body}, res){
         Thought.create(body)
             .then(({_id}) =>{
-                return User.findOneAndUpdate({_id: params.userId}, {$push: {thoughts: _id}}, {new: true})
+                return User.findOneAndUpdate({_id: params.userId}, {$push: {thought: _id}}, {new: true})
             })
             .then(thoughtsData => {
-                if(!thoughtsData){res.status(500).json({message: 'no user with this id'}) ; return;}
+                if(!thoughtsData){res.status(404).json({message: 'no user with this id'}) ; return;}
                 res.json(thoughtsData)
             })
             .catch(err => res.json(err))
     },
 
     getAllThoughts(req, res){
-        Thought.find()
+        Thought.find({})
         .populate({path: 'reactions', selecte: '-__v'})
-        .selecte('-__v')
+        .select('-__v')
         .sort({_id: -1})
         .then(thoughtsData => res.json(thoughtsData))
-        .catch(err => res.json(err))
+        .catch(err =>  res.status(400).json(err))
     },
 
     getThoughtById({params}, res){
@@ -53,9 +53,9 @@ const thoughtsController = {
 
     },
     addReaction({params, body}, res){
-        Thought.findOneAndUpdate({_id: params.thoughtId},{$push: {reaction: body}}, {new: true, runValidators: true})
-        .populate({path: 'reaction', selecte:'-__v'})
-        .selecte('-__v')
+        Thought.findOneAndUpdate({_id: params.thoughtId},{$push: {reactions:body}}, {new: true, runValidators: true})
+        .populate({path: 'reactions', selecte:'-__v'})
+        .select('-__v')
         .then( thoughtsData => {
             if(!thoughtsData){ res.status(404).json({message: 'no thoughts under this id'}); return;}
             res.json(thoughtsData)
@@ -64,7 +64,7 @@ const thoughtsController = {
 
     },
     deleteReaction({params}, res){
-        Thought.findOneAndUpdate({_id: params.thoughtId},{$pull: {reaction: {reactionId: params}}}, {new: true})
+        Thought.findOneAndUpdate({_id: params.id},{$pull: { reactions: { reactionId: params.reactionId } } }, {new: true})
         .then(thoughtsData => {
             if(!thoughtsData){ res.status(404).json({message:'no thoughts under this id'}); return;}
             res.json(thoughtsData)

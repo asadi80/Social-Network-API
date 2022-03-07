@@ -1,12 +1,12 @@
-const {User} = require('../models');
-const { populate } = require('../models/User');
+const { User } = require('../models');
 
 const userController = {
 // gets all users
   getAllUsers(req, res){
     User.find()
-      .populate({path: 'thought', select:'-__v'})
+      // .populate({path: 'thought', select:'-__v'})
       .populate({path: 'friends', select:'-__v'})
+      .select('-__v')
       .then(userData => res.json(userData))
       .catch(err => res.status(400).json(err))
   },
@@ -14,8 +14,9 @@ const userController = {
 // get user by id
   getUserById({params}, res){
     User.findOne({_id: params.id})
-      .populate({path: 'thought', select:'-__v'})
+      // .populate({path: 'thought', select:'-__v'})
       .populate({path: 'friends', select:'-__v'})
+      .select('-__v')
       .sort({_id: -1})
       .then(userData => {
         if(!userData){res.status(500).json({message:'no user with this id'}); return;}
