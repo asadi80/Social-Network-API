@@ -10,7 +10,7 @@ const userController = {
       .then(userData => res.json(userData))
       .catch(err => res.status(400).json(err))
   },
-
+//-----------------------------------------------------------------------------------------------------------------------------
 // get user by id
   getUserById({params}, res){
     User.findOne({_id: params.id})
@@ -24,14 +24,14 @@ const userController = {
       })
       .catch(err => res.status(400).json(err))
   },
-
+//-----------------------------------------------------------------------------------------------------------------------------
   // create user
   createUser({body}, res){
     User.create(body)
       .then(userData => res.json(userData))
       .catch(err => res.status(500).json(err))
   },
-
+//-----------------------------------------------------------------------------------------------------------------------------
   // update user
   updateUser({params, body}, res){
     User.findOneAndUpdate({_id: params.id}, body,{new:true, runValidators: true})
@@ -45,7 +45,7 @@ const userController = {
       .catch(err => res.status(500).json(err))
 
   },
-
+//-----------------------------------------------------------------------------------------------------------------------------
   // delete user
   deleteUser({params}, res){
     User.findByIdAndDelete({_id: params.id})
@@ -59,7 +59,7 @@ const userController = {
     .catch(err => res.status(500).json(err))
 
   },
-
+//-----------------------------------------------------------------------------------------------------------------------------
   // add friend
   addFriend({params}, res){
     User.findOneAndUpdate({_id:params.id},{$push:{friends: params.friendId}}, {new:true})
@@ -74,7 +74,7 @@ const userController = {
       })
       .catch(err => res.json(err))
   },
-
+//-----------------------------------------------------------------------------------------------------------------------------
   // delete friend
   deleteFriend({params}, res){
     User.findByIdAndUpdate({_id:params.id}, {$pull: {friends: params.friendId}}, {new: true})
